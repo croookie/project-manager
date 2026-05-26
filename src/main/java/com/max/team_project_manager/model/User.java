@@ -13,12 +13,14 @@ public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private Long id;
+
+	@Column(nullable = false, unique = true, length = 255)
 	private String email;
 
-	@Column(name = "password_hash")
+	@Column(name = "password_hash", nullable = false, length = 60)
 	private String passwordHash;
 
-	@Column(name = "display_name")
+	@Column(name = "display_name", nullable = false, length = 50)
 	private String displayName;
 
 	public Long getId() {

@@ -1,5 +1,6 @@
 package com.max.team_project_manager.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,7 +13,11 @@ public class Project {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private Long id;
+
+	@Column(nullable = false, length = 50)
 	private String name;
+
+	@Column(nullable = false, length = 1000)
 	private String description;
 
 	public Long getId() {
