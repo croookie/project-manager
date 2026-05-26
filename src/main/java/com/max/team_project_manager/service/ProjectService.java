@@ -57,6 +57,9 @@ public class ProjectService {
 
 		ProjectResponse response = projectMapper.toResponse(savedProject, user);
 		
+		//throw new RuntimeException("lmao testing transactional");
 		return response;
 	}
+
+
 }

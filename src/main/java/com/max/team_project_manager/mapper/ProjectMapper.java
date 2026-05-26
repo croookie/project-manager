@@ -25,7 +25,7 @@ public class ProjectMapper {
 		response.setName(savedProject.getName());
 		response.setDescription(savedProject.getDescription());
 		response.setOwnerId(user.getId());
-		response.setOwnerUsername(user.getUsername());
+		response.setOwnerDisplayName(user.getDisplayName());
 
 		return response;
 	}

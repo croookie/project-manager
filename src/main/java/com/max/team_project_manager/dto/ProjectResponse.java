@@ -5,7 +5,7 @@ public class ProjectResponse {
 	private String name;
 	private String description;
 	private Long ownerId;
-	private String ownerUsername;
+	private String ownerDisplayName;
 
 	public Long getId() {
 		return id;
@@ -31,10 +31,10 @@ public class ProjectResponse {
 	public void setOwnerId(Long ownerId) {
 		this.ownerId = ownerId;
 	}
-	public String getOwnerUsername() {
-		return ownerUsername;
+	public String getOwnerDisplayName() {
+		return ownerDisplayName;
 	}
-	public void setOwnerUsername(String ownerUsername) {
-		this.ownerUsername = ownerUsername;
+	public void setOwnerDisplayName(String ownerDisplayName) {
+		this.ownerDisplayName = ownerDisplayName;
 	}
 }
