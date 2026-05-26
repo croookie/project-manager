@@ -13,6 +13,8 @@ import com.max.team_project_manager.dto.ProjectResponse;
 import com.max.team_project_manager.dto.ProjectSummary;
 import com.max.team_project_manager.service.ProjectService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/projects")
 public class ProjectController {
@@ -25,6 +27,7 @@ public class ProjectController {
 
 	@PostMapping
 	public ProjectResponse createProject(
+			@Valid
 			@RequestBody
 			CreateProjectRequest request
 	) {

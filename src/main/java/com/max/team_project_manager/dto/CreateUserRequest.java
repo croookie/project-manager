@@ -1,9 +1,21 @@
 package com.max.team_project_manager.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
 public class CreateUserRequest {
 
+	@NotBlank
+	@Email
 	private String email;
+
+	@NotBlank
+	@Size(min = 8, max = 50)
 	private String rawPassword;
+
+	@NotBlank
+	@Size(min = 3, max = 50)
 	private String displayName;
 
 	public String getEmail() {
