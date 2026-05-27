@@ -1,8 +1,17 @@
 package com.max.team_project_manager.dto;
 
+import com.max.team_project_manager.model.Role;
+
 public class ProjectSummary {
 	private Long id;
 	private String name;
+	private Role role;
+
+	public ProjectSummary(Long id, String name, Role role) {
+        this.id = id;
+        this.name = name;
+        this.role = role;
+	}
 
 	public Long getId() {
 		return id;
@@ -15,5 +24,11 @@ public class ProjectSummary {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public Role getRole() {
+		return role;
+	}
+	public void setRole(Role role) {
+		this.role = role;
 	}
 }

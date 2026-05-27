@@ -1,5 +1,8 @@
 package com.max.team_project_manager.controller;
 
+import java.util.List;
+
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -7,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.max.team_project_manager.dto.CreateProjectRequest;
 import com.max.team_project_manager.dto.ProjectResponse;
+import com.max.team_project_manager.dto.ProjectSummary;
 import com.max.team_project_manager.service.ProjectService;
 
 import jakarta.validation.Valid;
@@ -30,4 +34,8 @@ public class ProjectController {
 		return projectService.createProject(request);
 	}
 
+	@GetMapping
+	public List<ProjectSummary> getCurrentUserProjects() {
+		return projectService.getCurrentUserProjects();
+	}
 }

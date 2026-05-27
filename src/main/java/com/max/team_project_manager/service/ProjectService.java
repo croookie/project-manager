@@ -1,10 +1,13 @@
 package com.max.team_project_manager.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.max.team_project_manager.dto.CreateProjectRequest;
 import com.max.team_project_manager.dto.ProjectResponse;
+import com.max.team_project_manager.dto.ProjectSummary;
 import com.max.team_project_manager.mapper.ProjectMapper;
 import com.max.team_project_manager.model.Project;
 import com.max.team_project_manager.model.ProjectMembership;
@@ -60,5 +63,10 @@ public class ProjectService {
 		return response;
 	}
 
+	public List<ProjectSummary> getCurrentUserProjects() {
+		return projectMembershipRepository.findProjectsByUserId(
+				currentUserProvider.getUserId()
+		);
+	}
 
 }
