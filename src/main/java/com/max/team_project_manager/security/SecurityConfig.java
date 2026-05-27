@@ -1,7 +1,5 @@
 package com.max.team_project_manager.security;
 
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -31,13 +29,6 @@ public class SecurityConfig {
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
-	}
-
-	@Bean
-	CommandLineRunner debug(ApplicationContext ctx) {
-		return args -> {
-			System.out.println(ctx.getBeansOfType(UserDetailsService.class));
-		};
 	}
 
 	@Bean

@@ -10,8 +10,8 @@ import com.max.team_project_manager.model.Project;
 import com.max.team_project_manager.model.ProjectMembership;
 import com.max.team_project_manager.model.Role;
 import com.max.team_project_manager.model.User;
-import com.max.team_project_manager.repository.ProjectRepository;
 import com.max.team_project_manager.repository.ProjectMembershipRepository;
+import com.max.team_project_manager.repository.ProjectRepository;
 import com.max.team_project_manager.repository.UserRepository;
 import com.max.team_project_manager.security.CurrentUserProvider;
 
@@ -57,7 +57,6 @@ public class ProjectService {
 
 		ProjectResponse response = projectMapper.toResponse(savedProject, user);
 		
-		//throw new RuntimeException("lmao testing transactional");
 		return response;
 	}
 
