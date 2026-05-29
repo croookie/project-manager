@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
 
 @Entity
 @Table(name = "users")
@@ -15,6 +16,7 @@ public class User {
 	private Long id;
 
 	@Column(nullable = false, unique = true, length = 255)
+	@Email
 	private String email;
 
 	@Column(name = "password_hash", nullable = false, length = 60)

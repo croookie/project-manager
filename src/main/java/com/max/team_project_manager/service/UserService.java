@@ -1,5 +1,7 @@
 package com.max.team_project_manager.service;
 
+import java.util.Optional;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -7,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.max.team_project_manager.dto.CreateUserRequest;
 import com.max.team_project_manager.dto.UserResponse;
 import com.max.team_project_manager.exception.EmailAlreadyExistsException;
+import com.max.team_project_manager.exception.UserNotFoundException;
 import com.max.team_project_manager.mapper.UserMapper;
 import com.max.team_project_manager.model.User;
 import com.max.team_project_manager.repository.UserRepository;
@@ -41,6 +44,12 @@ public class UserService {
 		UserResponse response = userMapper.toResponse(saved);
 
 		return response;
+	}
+
+	public UserResponse getById(Long id) {
+		User user = userRepository.findById(id)
+				.orElseThrow(() -> new UserNotFoundException());
+		return userMapper.toResponse(user);
 	}
 
 }
