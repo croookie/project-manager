@@ -1,11 +1,13 @@
 package com.max.team_project_manager.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import com.max.team_project_manager.dto.ProjectResponse;
 import com.max.team_project_manager.dto.ProjectSummary;
 import com.max.team_project_manager.model.ProjectMembership;
 
@@ -23,4 +25,6 @@ public interface ProjectMembershipRepository extends JpaRepository<ProjectMember
 	WHERE m.user.id = :userId
 	""")
 	List<ProjectSummary> findProjectsByUserId(Long userId);
+
+
 }

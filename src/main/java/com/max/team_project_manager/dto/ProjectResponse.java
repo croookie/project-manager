@@ -7,6 +7,22 @@ public class ProjectResponse {
 	private Long ownerId;
 	private String ownerDisplayName;
 
+	public ProjectResponse () {}
+
+	public ProjectResponse (
+			Long id,
+			String name,
+			String description,
+			Long ownerId,
+			String ownerDisplayName
+	) {
+		this.id = id;
+		this.name = name;
+		this.description = description;
+		this.ownerId = ownerId;
+		this.ownerDisplayName = ownerDisplayName;
+	}
+
 	public Long getId() {
 		return id;
 	}

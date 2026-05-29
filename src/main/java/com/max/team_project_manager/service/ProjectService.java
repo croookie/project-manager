@@ -1,6 +1,7 @@
 package com.max.team_project_manager.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,6 +68,12 @@ public class ProjectService {
 		return projectMembershipRepository.findProjectsByUserId(
 				currentUserProvider.getUserId()
 		);
+	}
+
+	public Optional<ProjectResponse> getProjectById(Long projectId) {
+		return projectRepository
+				.findAccessibleById(projectId, currentUserProvider.getUserId());
+
 	}
 
 }

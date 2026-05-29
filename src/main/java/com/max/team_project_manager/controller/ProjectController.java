@@ -1,8 +1,10 @@
 package com.max.team_project_manager.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,5 +39,12 @@ public class ProjectController {
 	@GetMapping
 	public List<ProjectSummary> getCurrentUserProjects() {
 		return projectService.getCurrentUserProjects();
+	}
+
+	@GetMapping("/{id}")
+	public Optional<ProjectResponse> getProject(
+			@PathVariable Long id
+	) {
+		return projectService.getProjectById(id);
 	}
 }
