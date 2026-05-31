@@ -1,7 +1,6 @@
 package com.max.team_project_manager.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.max.team_project_manager.dto.CreateProjectRequest;
 import com.max.team_project_manager.dto.ProjectResponse;
 import com.max.team_project_manager.dto.ProjectSummary;
+import com.max.team_project_manager.exception.ProjectNotFoundException;
 import com.max.team_project_manager.mapper.ProjectMapper;
 import com.max.team_project_manager.model.Project;
 import com.max.team_project_manager.model.ProjectMembership;
@@ -70,10 +70,10 @@ public class ProjectService {
 		);
 	}
 
-	public Optional<ProjectResponse> getProjectById(Long projectId) {
+	public ProjectResponse getProjectById(Long projectId) {
 		return projectRepository
-				.findAccessibleById(projectId, currentUserProvider.getUserId());
-
+				.findAccessibleById(projectId, currentUserProvider.getUserId())
+				.orElseThrow(() -> new ProjectNotFoundException());
 	}
 
 }

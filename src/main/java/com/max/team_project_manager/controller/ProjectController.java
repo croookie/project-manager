@@ -42,7 +42,7 @@ public class ProjectController {
 	}
 
 	@GetMapping("/{id}")
-	public Optional<ProjectResponse> getProject(
+	public ProjectResponse getProject(
 			@PathVariable Long id
 	) {
 		return projectService.getProjectById(id);

@@ -1,0 +1,28 @@
+package com.max.team_project_manager.dto;
+
+import com.max.team_project_manager.model.Role;
+
+public class ProjectMemberResponse {
+	private Long userId;
+	private String userDisplayName;
+	private Role role;
+
+	public Long getUserId() {
+		return userId;
+	}
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+	public String getUserDisplayName() {
+		return userDisplayName;
+	}
+	public void setUserDisplayName(String userDisplayName) {
+		this.userDisplayName = userDisplayName;
+	}
+	public Role getRole() {
+		return role;
+	}
+	public void setRole(Role role) {
+		this.role = role;
+	}
+}
