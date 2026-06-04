@@ -7,6 +7,6 @@ public class DummyUserProvider implements CurrentUserProvider {
 
 	@Override
 	public Long getUserId() {
-		return 51L;
+		return 1L;
 	}
 }
