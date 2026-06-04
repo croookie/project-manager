@@ -1,5 +1,6 @@
 package com.max.team_project_manager.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -32,6 +33,8 @@ public class ProjectMembership {
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
 
+	// Database constraint ensures no more than one OWNER per project
+	@Column(nullable = false, length = 20)
 	@Enumerated(EnumType.STRING)
 	private Role role;
 
