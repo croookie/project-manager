@@ -1,3 +1,4 @@
+/*
 -- USERS
 -- current user for access
 -- user_id = 1
@@ -109,3 +110,4 @@ VALUES (
 	101,
 	'OWNER'
 );
+*/
