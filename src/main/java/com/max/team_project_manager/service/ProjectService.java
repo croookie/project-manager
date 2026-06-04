@@ -9,6 +9,7 @@ import com.max.team_project_manager.dto.CreateProjectRequest;
 import com.max.team_project_manager.dto.ProjectResponse;
 import com.max.team_project_manager.dto.ProjectSummary;
 import com.max.team_project_manager.exception.ProjectNotFoundException;
+import com.max.team_project_manager.exception.UserNotFoundException;
 import com.max.team_project_manager.mapper.ProjectMapper;
 import com.max.team_project_manager.model.Project;
 import com.max.team_project_manager.model.ProjectMembership;
@@ -51,7 +52,7 @@ public class ProjectService {
 
 		Long userId = currentUserProvider.getUserId();
 		User user = userRepository.findById(userId)
-			.orElseThrow(() -> new RuntimeException("User not found!"));
+			.orElseThrow(() -> new UserNotFoundException(userId));
 
 		ProjectMembership membership = new ProjectMembership();
 		membership.setProject(savedProject);
@@ -73,7 +74,7 @@ public class ProjectService {
 	public ProjectResponse getProjectById(Long projectId) {
 		return projectRepository
 				.findAccessibleById(projectId, currentUserProvider.getUserId())
-				.orElseThrow(() -> new ProjectNotFoundException());
+				.orElseThrow(() -> new ProjectNotFoundException(projectId));
 	}
 
 }

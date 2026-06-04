@@ -50,16 +50,18 @@ public class UserService {
 	}
 
 	public UserResponse getById(Long id) {
-		User user = userRepository.findById(id)
-				.orElseThrow(() -> new UserNotFoundException());
+		User user = userRepository
+			.findById(id)
+			.orElseThrow(() -> new UserNotFoundException(id));
 		return userMapper.toResponse(user);
 	}
 
 	@Transactional
 	public UserResponse updateProfile(UpdateUserRequest request) {
+		Long currentUserId = currentUserProvider.getUserId();
 		User user = userRepository
-			.findById(currentUserProvider.getUserId())
-			.orElseThrow(() -> new UserNotFoundException());
+			.findById(currentUserId)
+			.orElseThrow(() -> new UserNotFoundException(currentUserId));
 
 		user.setDisplayName(request.getDisplayName());
 

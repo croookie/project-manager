@@ -8,6 +8,8 @@ import com.max.team_project_manager.dto.ProjectMemberResponse;
 import com.max.team_project_manager.exception.InsufficientPermissionsException;
 import com.max.team_project_manager.exception.MembershipAlreadyExistsException;
 import com.max.team_project_manager.exception.ProjectAlreadyHasOwnerException;
+import com.max.team_project_manager.exception.ProjectNotFoundException;
+import com.max.team_project_manager.exception.UserNotFoundException;
 import com.max.team_project_manager.mapper.ProjectMembershipMapper;
 import com.max.team_project_manager.model.Project;
 import com.max.team_project_manager.model.ProjectMembership;
@@ -47,26 +49,30 @@ public class ProjectMembershipService {
 			AddProjectMemberRequest request
 	) {
 		if (request.getRole() == Role.OWNER) {
-			throw new ProjectAlreadyHasOwnerException();
+			throw new ProjectAlreadyHasOwnerException(projectId);
 		}
 
-		Project project = projectRepository.findById(projectId)
-			.orElseThrow(() -> new RuntimeException("RequestedResourceDoesntExist"));
+		Project project = projectRepository
+			.findById(projectId)
+			.orElseThrow(() -> new ProjectNotFoundException(projectId));
 
-		User user = userRepository.findById(request.getUserId())
-			.orElseThrow(() -> new RuntimeException("RequestedResourceDoesntExist"));
+		User user = userRepository
+			.findById(request.getUserId())
+			.orElseThrow(() -> new UserNotFoundException(request.getUserId()));
 
 		projectMembershipRepository
 			.findByProjectIdAndUserIdAndRole(
 					projectId, 
 					currentUserProvider.getUserId(),
 					Role.OWNER)
-			.orElseThrow(() -> new InsufficientPermissionsException());
+			.orElseThrow(() -> new InsufficientPermissionsException("add project members"));
 
 
-		if (projectMembershipRepository
-				.existsByProjectIdAndUserId(projectId, request.getUserId())) {
-					throw new MembershipAlreadyExistsException();
+		if (projectMembershipRepository.existsByProjectIdAndUserId(projectId, request.getUserId())) {
+					throw new MembershipAlreadyExistsException(
+							projectId, 
+							request.getUserId()
+					);
 		}
 
 		ProjectMembership pm = projectMembershipMapper.toEntity(project, user, request.getRole());
