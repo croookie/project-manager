@@ -7,6 +7,7 @@ import com.max.team_project_manager.dto.AddProjectMemberRequest;
 import com.max.team_project_manager.dto.ProjectMemberResponse;
 import com.max.team_project_manager.exception.InsufficientPermissionsException;
 import com.max.team_project_manager.exception.MembershipAlreadyExistsException;
+import com.max.team_project_manager.exception.MembershipNotFoundException;
 import com.max.team_project_manager.exception.ProjectAlreadyHasOwnerException;
 import com.max.team_project_manager.exception.ProjectNotFoundException;
 import com.max.team_project_manager.exception.UserNotFoundException;
@@ -79,5 +80,37 @@ public class ProjectMembershipService {
 		ProjectMembership savedPm = projectMembershipRepository.save(pm);
 
 		return projectMembershipMapper.toResponse(savedPm);
+	}
+
+	@Transactional
+	public void removeMember(Long projectId, Long userId) {
+
+		ProjectMembership currentMember = projectMembershipRepository
+			.findByProjectIdAndUserId(projectId, currentUserProvider.getUserId())
+			.orElseThrow(() -> new InsufficientPermissionsException("remove project members"));
+
+		ProjectMembership targetMember = projectMembershipRepository
+			.findByProjectIdAndUserId(projectId, userId)
+			.orElseThrow(() -> new MembershipNotFoundException(projectId, userId));
+
+		Role actorRole = currentMember.getRole();
+		Role targetRole = targetMember.getRole();
+
+		if (actorRole != Role.OWNER &&
+			actorRole != Role.ADMIN) {
+			throw new InsufficientPermissionsException("remove project members");
+		}
+
+		if (targetRole == Role.OWNER) {
+			throw new InsufficientPermissionsException("remove project owner");
+		}
+
+		if (actorRole != Role.OWNER &&
+			targetRole == Role.ADMIN) {
+			throw new InsufficientPermissionsException("remove project admins");
+		}
+
+		projectMembershipRepository.deleteByProjectIdAndUserId(projectId, userId);
+
 	}
 }

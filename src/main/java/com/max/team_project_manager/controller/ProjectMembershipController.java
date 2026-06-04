@@ -1,5 +1,6 @@
 package com.max.team_project_manager.controller;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,5 +31,13 @@ public class ProjectMembershipController {
 			@Valid @RequestBody AddProjectMemberRequest request
 	) {
 		return projectMembershipService.addMember(projectId, request);
+	}
+
+	@DeleteMapping("/{userId}")
+	public void removeMember(
+			@PathVariable Long projectId,
+			@PathVariable Long userId
+	) {
+		projectMembershipService.removeMember(projectId, userId);
 	}
 }
