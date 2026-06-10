@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.max.team_project_manager.exception.InsufficientPermissionsException;
+import com.max.team_project_manager.exception.MembershipNotFoundException;
 import com.max.team_project_manager.model.ProjectMembership;
 import com.max.team_project_manager.model.Role;
 import com.max.team_project_manager.repository.ProjectMembershipRepository;
@@ -193,7 +194,48 @@ public class ProjectMembershipServiceTest {
 		verify(projectMembershipRepository, never())
 			.deleteByProjectIdAndUserId(anyLong(), anyLong());
 	}
-	
+
+	@Test
+	public void shouldThrowWhenActorMembershipNotFound() {
+
+		when(currentUserProvider.getUserId())
+			.thenReturn(ACTOR_ID);
+
+		when(projectMembershipRepository.findByProjectIdAndUserId(PROJECT_ID, ACTOR_ID))
+			.thenReturn(Optional.empty());
+
+		assertThrows(
+				InsufficientPermissionsException.class,
+				() -> projectMembershipService.removeMember(PROJECT_ID, TARGET_ID)
+		);
+
+		verify(projectMembershipRepository, never())
+			.deleteByProjectIdAndUserId(anyLong(), anyLong());
+	}
+
+	@Test
+	public void shouldThrowWhenTargetMembershipNotFound() {
+
+		ProjectMembership actor = membership(Role.OWNER);
+
+		when(currentUserProvider.getUserId())
+			.thenReturn(ACTOR_ID);
+
+		when(projectMembershipRepository.findByProjectIdAndUserId(PROJECT_ID, ACTOR_ID))
+			.thenReturn(Optional.of(actor));
+
+		when(projectMembershipRepository.findByProjectIdAndUserId(PROJECT_ID, TARGET_ID))
+			.thenReturn(Optional.empty());
+
+		assertThrows(
+				MembershipNotFoundException.class,
+				() -> projectMembershipService.removeMember(PROJECT_ID, TARGET_ID)
+		);
+
+		verify(projectMembershipRepository, never())
+			.deleteByProjectIdAndUserId(anyLong(), anyLong());
+	}
+
 	//helper
 	private ProjectMembership membership(Role role) {
 		ProjectMembership membership = new ProjectMembership();
