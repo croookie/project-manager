@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 
 import com.max.team_project_manager.dto.ProjectSummary;
 import com.max.team_project_manager.model.ProjectMembership;
-import com.max.team_project_manager.model.Role;
 
 @Repository
 public interface ProjectMembershipRepository extends JpaRepository<ProjectMembership, Long> {
@@ -25,8 +24,6 @@ public interface ProjectMembershipRepository extends JpaRepository<ProjectMember
 	WHERE m.user.id = :userId
 	""")
 	List<ProjectSummary> findProjectsByUserId(Long userId);
-
-	Optional<ProjectMembership> findByProjectIdAndUserIdAndRole(Long projectId, Long userId, Role role);
 
 	boolean existsByProjectIdAndUserId(Long projectId, Long userId);
 

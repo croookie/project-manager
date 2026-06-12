@@ -53,6 +53,17 @@ public class ProjectMembershipService {
 			throw new ProjectAlreadyHasOwnerException(projectId);
 		}
 
+		ProjectMembership actorMembership = projectMembershipRepository
+			.findByProjectIdAndUserId(
+					projectId, 
+					currentUserProvider.getUserId()
+			)
+			.orElseThrow(() -> new InsufficientPermissionsException("add project members"));
+
+		if (actorMembership.getRole() != Role.OWNER) {
+			throw new InsufficientPermissionsException("add project members");
+		}
+
 		Project project = projectRepository
 			.findById(projectId)
 			.orElseThrow(() -> new ProjectNotFoundException(projectId));
@@ -61,19 +72,11 @@ public class ProjectMembershipService {
 			.findById(request.getUserId())
 			.orElseThrow(() -> new UserNotFoundException(request.getUserId()));
 
-		projectMembershipRepository
-			.findByProjectIdAndUserIdAndRole(
-					projectId, 
-					currentUserProvider.getUserId(),
-					Role.OWNER)
-			.orElseThrow(() -> new InsufficientPermissionsException("add project members"));
-
-
 		if (projectMembershipRepository.existsByProjectIdAndUserId(projectId, request.getUserId())) {
-					throw new MembershipAlreadyExistsException(
-							projectId, 
-							request.getUserId()
-					);
+			throw new MembershipAlreadyExistsException(
+					projectId, 
+					request.getUserId()
+			);
 		}
 
 		ProjectMembership pm = projectMembershipMapper.toEntity(project, user, request.getRole());
