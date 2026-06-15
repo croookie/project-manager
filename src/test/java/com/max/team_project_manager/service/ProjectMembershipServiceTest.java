@@ -35,19 +35,13 @@ import com.max.team_project_manager.security.CurrentUserProvider;
 @ExtendWith(MockitoExtension.class)
 public class ProjectMembershipServiceTest {
 
-	@Mock
-	private ProjectMembershipRepository projectMembershipRepository;
-	@Mock
-	private CurrentUserProvider currentUserProvider;
-	@Mock
-	private ProjectRepository projectRepository;
-	@Mock
-	private UserRepository userRepository;
-	@Mock
-	private ProjectMembershipMapper projectMembershipMapper;
+	@Mock private ProjectMembershipRepository projectMembershipRepository;
+	@Mock private CurrentUserProvider currentUserProvider;
+	@Mock private ProjectRepository projectRepository;
+	@Mock private UserRepository userRepository;
+	@Mock private ProjectMembershipMapper projectMembershipMapper;
 
-	@InjectMocks
-	private ProjectMembershipService projectMembershipService;
+	@InjectMocks private ProjectMembershipService projectMembershipService;
 
 	private static final Long PROJECT_ID = 1L;
 	private static final Long ACTOR_ID = 11L;
@@ -58,17 +52,12 @@ public class ProjectMembershipServiceTest {
 	@Test
 	public void ownerCannotRemoveOwner() {
 
-		ProjectMembership actor = membership(Role.OWNER);
-		ProjectMembership target = membership(Role.OWNER);
+		ProjectMembership actorMembership = membership(Role.OWNER);
+		ProjectMembership targetMembership = membership(Role.OWNER);
 
-		when(currentUserProvider.getUserId())
-			.thenReturn(ACTOR_ID);
-
-		when(projectMembershipRepository.findByProjectIdAndUserId(PROJECT_ID, ACTOR_ID))
-			.thenReturn(Optional.of(actor));
-
-		when(projectMembershipRepository.findByProjectIdAndUserId(PROJECT_ID, TARGET_ID))
-			.thenReturn(Optional.of(target));
+		stubCurrentUserId();
+		stubActorMembership(actorMembership);
+		stubTargetMembership(targetMembership);
 
 		assertThrows(
 				InsufficientPermissionsException.class,
@@ -82,17 +71,12 @@ public class ProjectMembershipServiceTest {
 	@Test
 	public void ownerCanRemoveAdmin() {
 
-		ProjectMembership actor = membership(Role.OWNER);
-		ProjectMembership target = membership(Role.ADMIN);
+		ProjectMembership actorMembership = membership(Role.OWNER);
+		ProjectMembership targetMembership = membership(Role.ADMIN);
 
-		when(currentUserProvider.getUserId())
-			.thenReturn(ACTOR_ID);
-
-		when(projectMembershipRepository.findByProjectIdAndUserId(PROJECT_ID, ACTOR_ID))
-			.thenReturn(Optional.of(actor));
-
-		when(projectMembershipRepository.findByProjectIdAndUserId(PROJECT_ID, TARGET_ID))
-			.thenReturn(Optional.of(target));
+		stubCurrentUserId();
+		stubActorMembership(actorMembership);
+		stubTargetMembership(targetMembership);
 
 		projectMembershipService.removeMember(PROJECT_ID, TARGET_ID);
 
@@ -103,17 +87,12 @@ public class ProjectMembershipServiceTest {
 	@Test
 	public void ownerCanRemoveMember() {
 
-		ProjectMembership actor = membership(Role.OWNER);
-		ProjectMembership target = membership(Role.MEMBER);
+		ProjectMembership actorMembership = membership(Role.OWNER);
+		ProjectMembership targetMembership = membership(Role.MEMBER);
 
-		when(currentUserProvider.getUserId())
-			.thenReturn(ACTOR_ID);
-
-		when(projectMembershipRepository.findByProjectIdAndUserId(PROJECT_ID, ACTOR_ID))
-			.thenReturn(Optional.of(actor));
-
-		when(projectMembershipRepository.findByProjectIdAndUserId(PROJECT_ID, TARGET_ID))
-			.thenReturn(Optional.of(target));
+		stubCurrentUserId();
+		stubActorMembership(actorMembership);
+		stubTargetMembership(targetMembership);
 
 		projectMembershipService.removeMember(PROJECT_ID, TARGET_ID);
 
@@ -124,17 +103,12 @@ public class ProjectMembershipServiceTest {
 	@Test
 	public void adminCannotRemoveOwner() {
 
-		ProjectMembership actor = membership(Role.ADMIN);
-		ProjectMembership target = membership(Role.OWNER);
+		ProjectMembership actorMembership = membership(Role.ADMIN);
+		ProjectMembership targetMembership = membership(Role.OWNER);
 
-		when(currentUserProvider.getUserId())
-			.thenReturn(ACTOR_ID);
-
-		when(projectMembershipRepository.findByProjectIdAndUserId(PROJECT_ID, ACTOR_ID))
-			.thenReturn(Optional.of(actor));
-
-		when(projectMembershipRepository.findByProjectIdAndUserId(PROJECT_ID, TARGET_ID))
-			.thenReturn(Optional.of(target));
+		stubCurrentUserId();
+		stubActorMembership(actorMembership);
+		stubTargetMembership(targetMembership);
 
 		assertThrows(
 				InsufficientPermissionsException.class,
@@ -148,17 +122,12 @@ public class ProjectMembershipServiceTest {
 	@Test
 	public void adminCannotRemoveAdmin() {
 
-		ProjectMembership actor = membership(Role.ADMIN);
-		ProjectMembership target = membership(Role.ADMIN);
+		ProjectMembership actorMembership = membership(Role.ADMIN);
+		ProjectMembership targetMembership = membership(Role.ADMIN);
 
-		when(currentUserProvider.getUserId())
-			.thenReturn(ACTOR_ID);
-
-		when(projectMembershipRepository.findByProjectIdAndUserId(PROJECT_ID, ACTOR_ID))
-			.thenReturn(Optional.of(actor));
-
-		when(projectMembershipRepository.findByProjectIdAndUserId(PROJECT_ID, TARGET_ID))
-			.thenReturn(Optional.of(target));
+		stubCurrentUserId();
+		stubActorMembership(actorMembership);
+		stubTargetMembership(targetMembership);
 
 		assertThrows(
 				InsufficientPermissionsException.class,
@@ -172,17 +141,12 @@ public class ProjectMembershipServiceTest {
 	@Test
 	public void adminCanRemoveMember() {
 
-		ProjectMembership actor = membership(Role.ADMIN);
-		ProjectMembership target = membership(Role.MEMBER);
+		ProjectMembership actorMembership = membership(Role.ADMIN);
+		ProjectMembership targetMembership = membership(Role.MEMBER);
 
-		when(currentUserProvider.getUserId())
-			.thenReturn(ACTOR_ID);
-
-		when(projectMembershipRepository.findByProjectIdAndUserId(PROJECT_ID, ACTOR_ID))
-			.thenReturn(Optional.of(actor));
-
-		when(projectMembershipRepository.findByProjectIdAndUserId(PROJECT_ID, TARGET_ID))
-			.thenReturn(Optional.of(target));
+		stubCurrentUserId();
+		stubActorMembership(actorMembership);
+		stubTargetMembership(targetMembership);
 
 		projectMembershipService.removeMember(PROJECT_ID, TARGET_ID);
 
@@ -193,17 +157,12 @@ public class ProjectMembershipServiceTest {
 	@Test
 	public void memberCannotRemoveAnyone() {
 
-		ProjectMembership actor = membership(Role.MEMBER);
-		ProjectMembership target = membership(Role.MEMBER);
+		ProjectMembership actorMembership = membership(Role.MEMBER);
+		ProjectMembership targetMembership = membership(Role.MEMBER);
 
-		when(currentUserProvider.getUserId())
-			.thenReturn(ACTOR_ID);
-
-		when(projectMembershipRepository.findByProjectIdAndUserId(PROJECT_ID, ACTOR_ID))
-			.thenReturn(Optional.of(actor));
-
-		when(projectMembershipRepository.findByProjectIdAndUserId(PROJECT_ID, TARGET_ID))
-			.thenReturn(Optional.of(target));
+		stubCurrentUserId();
+		stubActorMembership(actorMembership);
+		stubTargetMembership(targetMembership);
 
 		assertThrows(
 				InsufficientPermissionsException.class,
@@ -217,11 +176,8 @@ public class ProjectMembershipServiceTest {
 	@Test
 	public void shouldThrowWhenActorMembershipNotFoundRemoveMember() {
 
-		when(currentUserProvider.getUserId())
-			.thenReturn(ACTOR_ID);
-
-		when(projectMembershipRepository.findByProjectIdAndUserId(PROJECT_ID, ACTOR_ID))
-			.thenReturn(Optional.empty());
+		stubCurrentUserId();
+		stubActorMembershipNotFound();
 
 		assertThrows(
 				InsufficientPermissionsException.class,
@@ -235,16 +191,11 @@ public class ProjectMembershipServiceTest {
 	@Test
 	public void shouldThrowWhenTargetMembershipNotFound() {
 
-		ProjectMembership actor = membership(Role.OWNER);
+		ProjectMembership actorMembership = membership(Role.OWNER);
 
-		when(currentUserProvider.getUserId())
-			.thenReturn(ACTOR_ID);
-
-		when(projectMembershipRepository.findByProjectIdAndUserId(PROJECT_ID, ACTOR_ID))
-			.thenReturn(Optional.of(actor));
-
-		when(projectMembershipRepository.findByProjectIdAndUserId(PROJECT_ID, TARGET_ID))
-			.thenReturn(Optional.empty());
+		stubCurrentUserId();
+		stubActorMembership(actorMembership);
+		stubTargetMembershipNotFound();
 
 		assertThrows(
 				MembershipNotFoundException.class,
@@ -280,14 +231,8 @@ public class ProjectMembershipServiceTest {
 		ProjectMembership actorMembership = membership(project, actor, Role.OWNER);
 		ProjectMembership targetMembership = membership(project, target, Role.ADMIN);
 
-		when(currentUserProvider.getUserId())
-			.thenReturn(ACTOR_ID);
-
-		when(projectMembershipRepository.findByProjectIdAndUserId(
-					PROJECT_ID,
-					ACTOR_ID
-			))
-			.thenReturn(Optional.of(actorMembership));
+		stubCurrentUserId();
+		stubActorMembership(actorMembership);
 
 		when(projectRepository.findById(PROJECT_ID))
 			.thenReturn(Optional.of(project));
@@ -326,14 +271,8 @@ public class ProjectMembershipServiceTest {
 		ProjectMembership actorMembership = membership(project, actor, Role.OWNER);
 		ProjectMembership targetMembership = membership(project, target, Role.MEMBER);
 
-		when(currentUserProvider.getUserId())
-			.thenReturn(ACTOR_ID);
-
-		when(projectMembershipRepository.findByProjectIdAndUserId(
-					PROJECT_ID,
-					ACTOR_ID
-			))
-			.thenReturn(Optional.of(actorMembership));
+		stubCurrentUserId();
+		stubActorMembership(actorMembership);
 
 		when(projectRepository.findById(PROJECT_ID))
 			.thenReturn(Optional.of(project));
@@ -367,14 +306,8 @@ public class ProjectMembershipServiceTest {
 		User actor = user(ACTOR_ID);
 		ProjectMembership actorMembership = membership(project, actor, Role.ADMIN);
 
-		when(currentUserProvider.getUserId())
-			.thenReturn(ACTOR_ID);
-
-		when(projectMembershipRepository.findByProjectIdAndUserId(
-					PROJECT_ID,
-					ACTOR_ID
-			))
-			.thenReturn(Optional.of(actorMembership));
+		stubCurrentUserId();
+		stubActorMembership(actorMembership);
 
 		assertThrows(
 				InsufficientPermissionsException.class,
@@ -392,14 +325,8 @@ public class ProjectMembershipServiceTest {
 		User actor = user(ACTOR_ID);
 		ProjectMembership actorMembership = membership(project, actor, Role.MEMBER);
 
-		when(currentUserProvider.getUserId())
-			.thenReturn(ACTOR_ID);
-
-		when(projectMembershipRepository.findByProjectIdAndUserId(
-					PROJECT_ID,
-					ACTOR_ID
-			))
-			.thenReturn(Optional.of(actorMembership));
+		stubCurrentUserId();
+		stubActorMembership(actorMembership);
 
 		assertThrows(
 				InsufficientPermissionsException.class,
@@ -414,13 +341,8 @@ public class ProjectMembershipServiceTest {
 	public void shouldThrowWhenActorMembershipNotFoundAddMember() {
 		AddProjectMemberRequest request = addMemberRequest(Role.MEMBER);
 
-		when(currentUserProvider.getUserId())
-			.thenReturn(ACTOR_ID);
-
-		when(projectMembershipRepository.findByProjectIdAndUserId(
-					PROJECT_ID,
-					ACTOR_ID))
-			.thenReturn(Optional.empty());
+		stubCurrentUserId();
+		stubActorMembershipNotFound();
 
 		assertThrows(
 				InsufficientPermissionsException.class,
@@ -439,13 +361,8 @@ public class ProjectMembershipServiceTest {
 
 		ProjectMembership actorMembership = membership(Role.OWNER);
 
-		when(currentUserProvider.getUserId())
-			.thenReturn(ACTOR_ID);
-
-		when(projectMembershipRepository.findByProjectIdAndUserId(
-				PROJECT_ID,
-				ACTOR_ID))
-			.thenReturn(Optional.of(actorMembership));
+		stubCurrentUserId();
+		stubActorMembership(actorMembership);
 
 		when(projectRepository.findById(PROJECT_ID))
 			.thenReturn(Optional.empty());
@@ -468,13 +385,8 @@ public class ProjectMembershipServiceTest {
 		Project project = project();
 		ProjectMembership actorMembership = membership(Role.OWNER);
 
-		when(currentUserProvider.getUserId())
-			.thenReturn(ACTOR_ID);
-
-		when(projectMembershipRepository.findByProjectIdAndUserId(
-				PROJECT_ID,
-				ACTOR_ID))
-			.thenReturn(Optional.of(actorMembership));
+		stubCurrentUserId();
+		stubActorMembership(actorMembership);
 
 		when(projectRepository.findById(PROJECT_ID))
 			.thenReturn(Optional.of(project));
@@ -502,13 +414,8 @@ public class ProjectMembershipServiceTest {
 		User target = user(TARGET_ID);
 		ProjectMembership actorMembership = membership(project, actor, Role.OWNER);
 
-		when(currentUserProvider.getUserId())
-			.thenReturn(ACTOR_ID);
-
-		when(projectMembershipRepository.findByProjectIdAndUserId(
-				PROJECT_ID,
-				ACTOR_ID))
-			.thenReturn(Optional.of(actorMembership));
+		stubCurrentUserId();
+		stubActorMembership(actorMembership);
 
 		when(projectRepository.findById(PROJECT_ID))
 			.thenReturn(Optional.of(project));
@@ -532,7 +439,42 @@ public class ProjectMembershipServiceTest {
 			.save(any(ProjectMembership.class));
 	}
 
-	// helpers
+	// stubs
+	
+	private void stubCurrentUserId() {
+		when(currentUserProvider.getUserId())
+			.thenReturn(ACTOR_ID);
+	}
+
+	private void stubActorMembership(ProjectMembership actorMembership) {
+		when(projectMembershipRepository.findByProjectIdAndUserId(
+				PROJECT_ID,
+				ACTOR_ID))
+			.thenReturn(Optional.of(actorMembership));
+	}
+
+	private void stubActorMembershipNotFound() {
+		when(projectMembershipRepository.findByProjectIdAndUserId(
+				PROJECT_ID,
+				ACTOR_ID))
+			.thenReturn(Optional.empty());
+	}
+
+	private void stubTargetMembership(ProjectMembership targetMembership) {
+		when(projectMembershipRepository.findByProjectIdAndUserId(
+				PROJECT_ID,
+				TARGET_ID))
+			.thenReturn(Optional.of(targetMembership));
+	}
+
+	private void stubTargetMembershipNotFound() {
+		when(projectMembershipRepository.findByProjectIdAndUserId(
+				PROJECT_ID,
+				TARGET_ID))
+			.thenReturn(Optional.empty());
+	}
+
+	// factories
 
 	private ProjectMembership membership(Role role) {
 		ProjectMembership membership = new ProjectMembership();
