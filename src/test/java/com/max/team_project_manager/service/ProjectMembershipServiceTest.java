@@ -2,6 +2,7 @@ package com.max.team_project_manager.service;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -16,8 +17,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.max.team_project_manager.dto.AddProjectMemberRequest;
 import com.max.team_project_manager.exception.InsufficientPermissionsException;
+import com.max.team_project_manager.exception.MembershipAlreadyExistsException;
 import com.max.team_project_manager.exception.MembershipNotFoundException;
 import com.max.team_project_manager.exception.ProjectAlreadyHasOwnerException;
+import com.max.team_project_manager.exception.ProjectNotFoundException;
+import com.max.team_project_manager.exception.UserNotFoundException;
 import com.max.team_project_manager.mapper.ProjectMembershipMapper;
 import com.max.team_project_manager.model.Project;
 import com.max.team_project_manager.model.ProjectMembership;
@@ -211,7 +215,7 @@ public class ProjectMembershipServiceTest {
 	}
 
 	@Test
-	public void shouldThrowWhenActorMembershipNotFound() {
+	public void shouldThrowWhenActorMembershipNotFoundRemoveMember() {
 
 		when(currentUserProvider.getUserId())
 			.thenReturn(ACTOR_ID);
@@ -376,6 +380,9 @@ public class ProjectMembershipServiceTest {
 				InsufficientPermissionsException.class,
 				() -> projectMembershipService.addMember(PROJECT_ID, request)
 		);
+
+		verify(projectMembershipRepository, never())
+			.save(any(ProjectMembership.class));
 	}
 
 	@Test
@@ -398,6 +405,131 @@ public class ProjectMembershipServiceTest {
 				InsufficientPermissionsException.class,
 				() -> projectMembershipService.addMember(PROJECT_ID, request)
 		);
+
+		verify(projectMembershipRepository, never())
+			.save(any(ProjectMembership.class));
+	}
+
+	@Test
+	public void shouldThrowWhenActorMembershipNotFoundAddMember() {
+		AddProjectMemberRequest request = addMemberRequest(Role.MEMBER);
+
+		when(currentUserProvider.getUserId())
+			.thenReturn(ACTOR_ID);
+
+		when(projectMembershipRepository.findByProjectIdAndUserId(
+					PROJECT_ID,
+					ACTOR_ID))
+			.thenReturn(Optional.empty());
+
+		assertThrows(
+				InsufficientPermissionsException.class,
+				() -> projectMembershipService.addMember(
+						PROJECT_ID,
+						request)
+		);
+
+		verify(projectMembershipRepository, never())
+			.save(any(ProjectMembership.class));
+	}
+
+	@Test
+	public void shouldThrowWhenProjectNotFound() {
+		AddProjectMemberRequest request = addMemberRequest(Role.MEMBER);
+
+		ProjectMembership actorMembership = membership(Role.OWNER);
+
+		when(currentUserProvider.getUserId())
+			.thenReturn(ACTOR_ID);
+
+		when(projectMembershipRepository.findByProjectIdAndUserId(
+				PROJECT_ID,
+				ACTOR_ID))
+			.thenReturn(Optional.of(actorMembership));
+
+		when(projectRepository.findById(PROJECT_ID))
+			.thenReturn(Optional.empty());
+
+		assertThrows(
+				ProjectNotFoundException.class,
+				() -> projectMembershipService.addMember(
+						PROJECT_ID,
+						request)
+		);
+
+		verify(projectMembershipRepository, never())
+			.save(any(ProjectMembership.class));
+	}
+
+	@Test
+	public void shouldThrowWhenUserNotFound() {
+		AddProjectMemberRequest request = addMemberRequest(Role.MEMBER);
+
+		Project project = project();
+		ProjectMembership actorMembership = membership(Role.OWNER);
+
+		when(currentUserProvider.getUserId())
+			.thenReturn(ACTOR_ID);
+
+		when(projectMembershipRepository.findByProjectIdAndUserId(
+				PROJECT_ID,
+				ACTOR_ID))
+			.thenReturn(Optional.of(actorMembership));
+
+		when(projectRepository.findById(PROJECT_ID))
+			.thenReturn(Optional.of(project));
+
+		when(userRepository.findById(TARGET_ID))
+			.thenReturn(Optional.empty());
+
+		assertThrows(
+				UserNotFoundException.class,
+				() -> projectMembershipService.addMember(
+						PROJECT_ID,
+						request)
+		);
+
+		verify(projectMembershipRepository, never())
+			.save(any(ProjectMembership.class));
+	}
+
+	@Test
+	public void shouldThrowWhenMembershipAlreadyExists() {
+		AddProjectMemberRequest request = addMemberRequest(Role.MEMBER);
+
+		Project project = project();
+		User actor = user(ACTOR_ID);
+		User target = user(TARGET_ID);
+		ProjectMembership actorMembership = membership(project, actor, Role.OWNER);
+
+		when(currentUserProvider.getUserId())
+			.thenReturn(ACTOR_ID);
+
+		when(projectMembershipRepository.findByProjectIdAndUserId(
+				PROJECT_ID,
+				ACTOR_ID))
+			.thenReturn(Optional.of(actorMembership));
+
+		when(projectRepository.findById(PROJECT_ID))
+			.thenReturn(Optional.of(project));
+
+		when(userRepository.findById(TARGET_ID))
+			.thenReturn(Optional.of(target));
+
+		when(projectMembershipRepository.existsByProjectIdAndUserId(
+				PROJECT_ID,
+				request.getUserId()))
+			.thenReturn(true);
+
+		assertThrows(
+				MembershipAlreadyExistsException.class,
+				() -> projectMembershipService.addMember(
+						PROJECT_ID,
+						request)
+		);
+
+		verify(projectMembershipRepository, never())
+			.save(any(ProjectMembership.class));
 	}
 
 	// helpers
