@@ -2,7 +2,7 @@ package com.max.team_project_manager.mapper;
 
 import org.springframework.stereotype.Component;
 
-import com.max.team_project_manager.dto.CreateUserRequest;
+import com.max.team_project_manager.dto.RegisterRequest;
 import com.max.team_project_manager.dto.UserResponse;
 import com.max.team_project_manager.model.User;
 
@@ -19,7 +19,7 @@ public class UserMapper {
 		return response;
 	}
 
-	public User toEntity(CreateUserRequest request, String passwordHash) {
+	public User toEntity(RegisterRequest request, String passwordHash) {
 		User user = new User();
 
 		user.setEmail(request.getEmail());
