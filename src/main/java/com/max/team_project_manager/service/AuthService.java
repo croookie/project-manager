@@ -1,12 +1,15 @@
 package com.max.team_project_manager.service;
 
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.max.team_project_manager.dto.AuthResponse;
+import com.max.team_project_manager.dto.LoginRequest;
 import com.max.team_project_manager.dto.RegisterRequest;
-import com.max.team_project_manager.dto.UserResponse;
 import com.max.team_project_manager.exception.EmailAlreadyExistsException;
 import com.max.team_project_manager.mapper.UserMapper;
 import com.max.team_project_manager.model.User;
@@ -14,21 +17,24 @@ import com.max.team_project_manager.repository.UserRepository;
 
 @Service
 public class AuthService {
-	private final UserService userService;
 	private final UserRepository userRepository;
 	private final UserMapper userMapper;
+	private final AuthenticationManager authenticationManager;
 	private final PasswordEncoder passwordEncoder;
+	private final JwtService jwtService;
 
 	public AuthService(
-			UserService userService,
 			UserRepository userRepository,
 			UserMapper userMapper,
-			PasswordEncoder passwordEncoder
+			AuthenticationManager authenticationManager,
+			PasswordEncoder passwordEncoder,
+			JwtService jwtService
 	) {
-		this.userService = userService;
 		this.userRepository = userRepository;
 		this.userMapper = userMapper;
+		this.authenticationManager = authenticationManager;
 		this.passwordEncoder = passwordEncoder;
+		this.jwtService = jwtService;
 	}
 
 	@Transactional
@@ -38,14 +44,30 @@ public class AuthService {
 			throw new EmailAlreadyExistsException(request.getEmail());
 		}
 
-		String passwordHash = passwordEncoder.encode(request.getRawPassword());
-		User user = userMapper.toEntity(request, passwordHash);
+		User user = userMapper.toEntity(
+				request, 
+				passwordEncoder.encode(request.getRawPassword()));
 
 		User saved = userRepository.save(user);
-		UserResponse userResponse = userMapper.toResponse(saved);
+
+		String jwt = jwtService.generateToken(saved.getEmail());
 
 		AuthResponse authResponse = new AuthResponse();
-		authResponse.setToken("email:" + userResponse.getEmail());
+		authResponse.setToken(jwt);
+
+		return authResponse;
+	}
+
+	public AuthResponse login(LoginRequest request) {
+		Authentication authentication = authenticationManager.authenticate(
+				new UsernamePasswordAuthenticationToken(
+					request.getEmail(),
+					request.getRawPassword()));
+
+		String jwt = jwtService.generateToken(authentication.getName());
+
+		AuthResponse authResponse = new AuthResponse();
+		authResponse.setToken(jwt);
 
 		return authResponse;
 	}

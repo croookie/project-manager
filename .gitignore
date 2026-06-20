@@ -44,3 +44,6 @@ Thumbs.db
 
 # Compiled class files (optional safety)
 *.class
+
+# Custom scripts
+testapi.sh
