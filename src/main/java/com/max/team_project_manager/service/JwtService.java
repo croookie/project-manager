@@ -7,6 +7,7 @@ import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
@@ -27,5 +28,27 @@ public class JwtService {
 						+ 1000 * 60 * 10))
 			.signWith(key)
 			.compact();
+	}
+
+	public String extractSubject(String jwt) {
+		return extractAllClaims(jwt).getSubject();
+	}
+
+	public boolean isTokenValid(String jwt) {
+		return !isTokenExpired(jwt);
+	}
+
+	private boolean isTokenExpired(String jwt) {
+		return extractAllClaims(jwt)
+			.getExpiration()
+			.before(new Date());
+	}
+
+	private Claims extractAllClaims(String jwt) {
+		return Jwts.parser()
+			.verifyWith(key)
+			.build()
+			.parseSignedClaims(jwt)
+			.getPayload();
 	}
 }
