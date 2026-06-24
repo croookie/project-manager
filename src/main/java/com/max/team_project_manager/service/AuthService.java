@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.max.team_project_manager.dto.AuthResponse;
 import com.max.team_project_manager.dto.LoginRequest;
 import com.max.team_project_manager.dto.RegisterRequest;
-import com.max.team_project_manager.exception.EmailAlreadyExistsException;
+import com.max.team_project_manager.exception.EmailAlreadyInUseException;
 import com.max.team_project_manager.mapper.UserMapper;
 import com.max.team_project_manager.model.User;
 import com.max.team_project_manager.repository.UserRepository;
@@ -41,7 +41,7 @@ public class AuthService {
 	public AuthResponse register(RegisterRequest request) {
 
 		if (userRepository.existsByEmail(request.getEmail())) {
-			throw new EmailAlreadyExistsException(request.getEmail());
+			throw new EmailAlreadyInUseException(request.getEmail());
 		}
 
 		User user = userMapper.toEntity(
