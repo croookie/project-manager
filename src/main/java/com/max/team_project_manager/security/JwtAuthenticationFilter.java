@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import com.max.team_project_manager.service.JwtService;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 
 @Component
@@ -50,22 +51,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		}
 
 		String jwt = authorizationHeader.substring(7);
+		Claims claims;
 
-		String username;
 		try {
-			username = jwtService.extractSubject(jwt);
+			claims = jwtService.extractClaims(jwt);
 
-			if (!jwtService.isTokenValid(jwt)) {
-				filterChain.doFilter(request, response);
-				return;
-			}
 		}
 		catch (JwtException e) {
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			return;
+		}
+
+		if (!jwtService.isTokenValid(claims)) {
 			filterChain.doFilter(request, response);
 			return;
 		}
 
+		String username = claims.getSubject();
 		UserDetails userDetails = securityUserDetailsService.loadUserByUsername(username);
+
 		UsernamePasswordAuthenticationToken token =
 			new UsernamePasswordAuthenticationToken(
 					userDetails,

@@ -30,21 +30,17 @@ public class JwtService {
 			.compact();
 	}
 
-	public String extractSubject(String jwt) {
-		return extractAllClaims(jwt).getSubject();
+	public boolean isTokenValid(Claims claims) {
+		String username = claims.getSubject();
+		Date exp =  claims.getExpiration();
+
+		return username != null
+			&& !username.isBlank()
+			&& exp != null
+			&& exp.after(new Date());
 	}
 
-	public boolean isTokenValid(String jwt) {
-		return !isTokenExpired(jwt);
-	}
-
-	private boolean isTokenExpired(String jwt) {
-		return extractAllClaims(jwt)
-			.getExpiration()
-			.before(new Date());
-	}
-
-	private Claims extractAllClaims(String jwt) {
+	public Claims extractClaims(String jwt) {
 		return Jwts.parser()
 			.verifyWith(key)
 			.build()
