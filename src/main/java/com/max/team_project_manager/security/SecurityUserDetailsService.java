@@ -5,8 +5,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.max.team_project_manager.model.User;
-import com.max.team_project_manager.repository.UserRepository;
+import com.max.team_project_manager.user.User;
+import com.max.team_project_manager.user.UserRepository;
 
 @Service
 public class SecurityUserDetailsService implements UserDetailsService {

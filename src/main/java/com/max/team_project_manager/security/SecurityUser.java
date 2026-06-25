@@ -6,7 +6,7 @@ import java.util.Collections;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.max.team_project_manager.model.User;
+import com.max.team_project_manager.user.User;
 
 public class SecurityUser implements UserDetails {
 	

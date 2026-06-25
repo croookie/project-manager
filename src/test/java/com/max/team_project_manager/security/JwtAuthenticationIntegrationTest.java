@@ -1,8 +1,10 @@
 package com.max.team_project_manager.security;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,9 +17,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.max.team_project_manager.dto.LoginRequest;
-import com.max.team_project_manager.dto.RegisterRequest;
-import com.max.team_project_manager.repository.UserRepository;
+import com.max.team_project_manager.auth.LoginRequest;
+import com.max.team_project_manager.auth.RegisterRequest;
+import com.max.team_project_manager.user.UserRepository;
 
 @ActiveProfiles("test")
 @SpringBootTest
