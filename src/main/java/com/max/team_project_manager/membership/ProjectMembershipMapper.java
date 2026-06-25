@@ -19,11 +19,11 @@ public class ProjectMembershipMapper {
 	}
 
 	public ProjectMemberResponse toResponse(ProjectMembership savedPm) {
-		ProjectMemberResponse response = new ProjectMemberResponse();
-
-		response.setUserId(savedPm.getUser().getId());
-		response.setUserDisplayName(savedPm.getUser().getDisplayName());
-		response.setRole(savedPm.getRole());
+		ProjectMemberResponse response = new ProjectMemberResponse(
+				savedPm.getUser().getId(),
+				savedPm.getUser().getDisplayName(),
+				savedPm.getRole()
+		);
 
 		return response;
 	}

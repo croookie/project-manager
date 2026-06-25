@@ -13,10 +13,10 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(EmailAlreadyInUseException.class)
 	public ResponseEntity<ErrorResponse> handle(EmailAlreadyInUseException ex) {
 
-		ErrorResponse response = new ErrorResponse();
-
-		response.setMessage("Email already in use");
-		response.setError("EMAIL_ALREADY_IN_USE");
+		ErrorResponse response = new ErrorResponse(
+				"Email already in use",
+				"EMAIL_ALREADY_IN_USE"
+		);
 
 		return ResponseEntity
 			.status(HttpStatus.CONFLICT)

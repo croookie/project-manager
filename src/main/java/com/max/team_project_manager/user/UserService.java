@@ -36,7 +36,7 @@ public class UserService {
 			.findById(currentUserId)
 			.orElseThrow(() -> new UserNotFoundException(currentUserId));
 
-		user.setDisplayName(request.getDisplayName());
+		user.setDisplayName(request.displayName());
 
 		return userMapper.toResponse(user);
 	}

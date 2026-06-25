@@ -1,26 +1,7 @@
 package com.max.team_project_manager.membership;
 
-public class ProjectMemberResponse {
-	private Long userId;
-	private String userDisplayName;
-	private Role role;
-
-	public Long getUserId() {
-		return userId;
-	}
-	public void setUserId(Long userId) {
-		this.userId = userId;
-	}
-	public String getUserDisplayName() {
-		return userDisplayName;
-	}
-	public void setUserDisplayName(String userDisplayName) {
-		this.userDisplayName = userDisplayName;
-	}
-	public Role getRole() {
-		return role;
-	}
-	public void setRole(Role role) {
-		this.role = role;
-	}
-}
+public record ProjectMemberResponse(
+	Long userId,
+	String userDisplayName,
+	Role role
+) {}

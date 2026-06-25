@@ -41,7 +41,7 @@ public class JwtAuthenticationIntegrationTest {
 
 	@Test
 	public void givenNewUser_whenRegister_thenReturnsToken() throws Exception {
-		RegisterRequest request = registerRequest(EMAIL, PASSWORD, "Test User");
+		RegisterRequest request = new RegisterRequest(EMAIL, PASSWORD, "Test User");
 
 		register(request)
 			.andDo(print())
@@ -51,7 +51,7 @@ public class JwtAuthenticationIntegrationTest {
 
 	@Test
 	public void givenExistingEmail_whenRegister_thenReturnsConflict() throws Exception {
-		RegisterRequest request = registerRequest(EMAIL, PASSWORD, "Test User");
+		RegisterRequest request = new RegisterRequest(EMAIL, PASSWORD, "Test User");
 
 		register(request);
 
@@ -62,10 +62,10 @@ public class JwtAuthenticationIntegrationTest {
 
 	@Test
 	public void givenValidCredentials_whenLogin_thenReturnsToken() throws Exception {
-		RegisterRequest registerRequest = registerRequest(EMAIL, PASSWORD, "Test User");
+		RegisterRequest registerRequest = new RegisterRequest(EMAIL, PASSWORD, "Test User");
 		register(registerRequest);
 
-		LoginRequest loginRequest = loginRequest(EMAIL,PASSWORD);
+		LoginRequest loginRequest = new LoginRequest(EMAIL,PASSWORD);
 
 		login(loginRequest)
 			.andDo(print())
@@ -75,10 +75,10 @@ public class JwtAuthenticationIntegrationTest {
 
 	@Test
 	public void givenUnknownEmail_whenLogin_thenReturnsUnauthorized () throws Exception {
-		RegisterRequest registerRequest = registerRequest(EMAIL, PASSWORD, "Test User");
+		RegisterRequest registerRequest = new RegisterRequest(EMAIL, PASSWORD, "Test User");
 		register(registerRequest);
 
-		LoginRequest loginRequest = loginRequest("unknown@example.com", PASSWORD);
+		LoginRequest loginRequest = new LoginRequest("unknown@example.com", PASSWORD);
 
 		login(loginRequest)
 			.andDo(print())
@@ -88,10 +88,10 @@ public class JwtAuthenticationIntegrationTest {
 
 	@Test
 	public void givenInvalidPassword_whenLogin_thenReturnsUnauthorized() throws Exception {
-		RegisterRequest registerRequest = registerRequest(EMAIL, PASSWORD, "Test User");
+		RegisterRequest registerRequest = new RegisterRequest(EMAIL, PASSWORD, "Test User");
 		register(registerRequest);
 
-		LoginRequest loginRequest = loginRequest(EMAIL, "invalid_password");
+		LoginRequest loginRequest = new LoginRequest(EMAIL, "invalid_password");
 
 		login(loginRequest)
 			.andDo(print())
@@ -101,7 +101,7 @@ public class JwtAuthenticationIntegrationTest {
 
 	@Test
 	public void givenValidToken_whenGetProjects_thenReturnsOk() throws Exception {
-		RegisterRequest registerRequest = registerRequest(EMAIL, PASSWORD, "Test User");
+		RegisterRequest registerRequest = new RegisterRequest(EMAIL, PASSWORD, "Test User");
 
 		String body = register(registerRequest)
 			.andReturn()
@@ -121,7 +121,7 @@ public class JwtAuthenticationIntegrationTest {
 
 	@Test
 	public void givenMissingToken_whenGetProjects_thenReturnsUnauthorized() throws Exception {
-		RegisterRequest registerRequest = registerRequest(EMAIL, PASSWORD, "Test User");
+		RegisterRequest registerRequest = new RegisterRequest(EMAIL, PASSWORD, "Test User");
 		register(registerRequest);
 
 		mockMvc.perform(
@@ -132,7 +132,7 @@ public class JwtAuthenticationIntegrationTest {
 
 	@Test
 	public void givenInvalidToken_whenGetProjects_thenReturnsUnauthorized() throws Exception {
-		RegisterRequest registerRequest = registerRequest(EMAIL, PASSWORD, "Test User");
+		RegisterRequest registerRequest = new RegisterRequest(EMAIL, PASSWORD, "Test User");
 		register(registerRequest);
 
 		mockMvc.perform(
@@ -140,32 +140,6 @@ public class JwtAuthenticationIntegrationTest {
 				.header("Authorization", "Bearer invalid-token")
 		)
 			.andExpect(status().isUnauthorized());
-	}
-
-	private RegisterRequest registerRequest(
-			String email,
-			String password,
-			String displayName
-	) {
-		RegisterRequest request = new RegisterRequest();
-
-		request.setEmail(email);
-		request.setRawPassword(password);
-		request.setDisplayName(displayName);
-
-		return request;
-	}
-
-	private LoginRequest loginRequest(
-			String email,
-			String password
-	) {
-		LoginRequest request = new LoginRequest();
-
-		request.setEmail(email);
-		request.setRawPassword(password);
-
-		return request;
 	}
 
 	private ResultActions register(RegisterRequest request) throws Exception {

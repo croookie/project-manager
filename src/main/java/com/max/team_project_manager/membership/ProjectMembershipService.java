@@ -43,7 +43,7 @@ public class ProjectMembershipService {
 			Long projectId,
 			AddProjectMemberRequest request
 	) {
-		if (request.getRole() == Role.OWNER) {
+		if (request.role() == Role.OWNER) {
 			throw new ProjectAlreadyHasOwnerException(projectId);
 		}
 
@@ -63,17 +63,17 @@ public class ProjectMembershipService {
 			.orElseThrow(() -> new ProjectNotFoundException(projectId));
 
 		User user = userRepository
-			.findById(request.getUserId())
-			.orElseThrow(() -> new UserNotFoundException(request.getUserId()));
+			.findById(request.userId())
+			.orElseThrow(() -> new UserNotFoundException(request.userId()));
 
-		if (projectMembershipRepository.existsByProjectIdAndUserId(projectId, request.getUserId())) {
+		if (projectMembershipRepository.existsByProjectIdAndUserId(projectId, request.userId())) {
 			throw new MembershipAlreadyExistsException(
 					projectId, 
-					request.getUserId()
+					request.userId()
 			);
 		}
 
-		ProjectMembership pm = projectMembershipMapper.toEntity(project, user, request.getRole());
+		ProjectMembership pm = projectMembershipMapper.toEntity(project, user, request.role());
 		ProjectMembership savedPm = projectMembershipRepository.save(pm);
 
 		return projectMembershipMapper.toResponse(savedPm);

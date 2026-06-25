@@ -38,20 +38,19 @@ public class AuthService {
 	@Transactional
 	public AuthResponse register(RegisterRequest request) {
 
-		if (userRepository.existsByEmail(request.getEmail())) {
-			throw new EmailAlreadyInUseException(request.getEmail());
+		if (userRepository.existsByEmail(request.email())) {
+			throw new EmailAlreadyInUseException(request.email());
 		}
 
 		User user = userMapper.toEntity(
 				request, 
-				passwordEncoder.encode(request.getRawPassword()));
+				passwordEncoder.encode(request.rawPassword()));
 
 		User saved = userRepository.save(user);
 
 		String jwt = jwtService.generateToken(saved.getEmail());
 
-		AuthResponse authResponse = new AuthResponse();
-		authResponse.setToken(jwt);
+		AuthResponse authResponse = new AuthResponse(jwt);
 
 		return authResponse;
 	}
@@ -59,13 +58,12 @@ public class AuthService {
 	public AuthResponse login(LoginRequest request) {
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(
-					request.getEmail(),
-					request.getRawPassword()));
+					request.email(),
+					request.rawPassword()));
 
 		String jwt = jwtService.generateToken(authentication.getName());
 
-		AuthResponse authResponse = new AuthResponse();
-		authResponse.setToken(jwt);
+		AuthResponse authResponse = new AuthResponse(jwt);
 
 		return authResponse;
 	}

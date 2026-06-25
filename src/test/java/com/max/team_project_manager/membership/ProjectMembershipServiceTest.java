@@ -420,7 +420,7 @@ public class ProjectMembershipServiceTest {
 
 		when(projectMembershipRepository.existsByProjectIdAndUserId(
 				PROJECT_ID,
-				request.getUserId()))
+				request.userId()))
 			.thenReturn(true);
 
 		assertThrows(
@@ -488,10 +488,10 @@ public class ProjectMembershipServiceTest {
 	}
 
 	private AddProjectMemberRequest addMemberRequest(Role role) {
-		AddProjectMemberRequest request = new AddProjectMemberRequest();
-
-		request.setUserId(TARGET_ID);
-		request.setRole(role);
+		AddProjectMemberRequest request = new AddProjectMemberRequest(
+				TARGET_ID,
+				role
+		);
 
 		return request;
 	}
