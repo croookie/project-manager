@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.max.team_project_manager.exception.InsufficientPermissionsException;
 import com.max.team_project_manager.exception.ProjectNotFoundException;
 import com.max.team_project_manager.exception.UserNotFoundException;
 import com.max.team_project_manager.membership.ProjectMembership;
@@ -71,4 +72,27 @@ public class ProjectService {
 				.orElseThrow(() -> new ProjectNotFoundException(projectId));
 	}
 
+	@Transactional
+	public void deleteProject(Long projectId) {
+		Long actorId = currentUserProvider.getUserId();
+
+		userRepository
+			.findById(actorId)
+			.orElseThrow(() -> new UserNotFoundException(actorId));
+
+		Project project = projectRepository
+			.findById(projectId)
+			.orElseThrow(() -> new ProjectNotFoundException(projectId));
+
+		ProjectMembership membership = projectMembershipRepository
+			.findByProjectIdAndUserId(projectId, actorId)
+			.orElseThrow(() -> new InsufficientPermissionsException("delete project"));
+
+		if (membership.getRole() != Role.OWNER) {
+			throw new InsufficientPermissionsException("delete project");
+		}
+
+		projectMembershipRepository.deleteAllByProjectId(projectId);
+		projectRepository.delete(project);
+	}
 }

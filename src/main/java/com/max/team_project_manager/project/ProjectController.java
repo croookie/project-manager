@@ -3,6 +3,7 @@ package com.max.team_project_manager.project;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,5 +44,13 @@ public class ProjectController {
 			@PathVariable Long id
 	) {
 		return projectService.getProjectById(id);
+	}
+
+	@DeleteMapping("/{id}")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void deleteProject(
+			@PathVariable Long id
+	) {
+		projectService.deleteProject(id);
 	}
 }
