@@ -14,8 +14,8 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<ErrorResponse> handle(EmailAlreadyInUseException ex) {
 
 		ErrorResponse response = new ErrorResponse(
-				"Email already in use",
-				"EMAIL_ALREADY_IN_USE"
+				"EMAIL_ALREADY_IN_USE",
+				"Email already in use"
 		);
 
 		return ResponseEntity

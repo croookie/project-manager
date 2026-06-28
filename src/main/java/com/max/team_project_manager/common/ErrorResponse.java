@@ -1,6 +1,6 @@
 package com.max.team_project_manager.common;
 
 public record ErrorResponse(
-	String message,
-	String error
+	String code,
+	String message
 ) {}
