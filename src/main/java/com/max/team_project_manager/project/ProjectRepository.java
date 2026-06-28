@@ -26,4 +26,6 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 		com.max.team_project_manager.membership.Role.OWNER
 	""")
 	Optional<ProjectResponse> findAccessibleById(Long projectId, Long userId);
+
+	Optional<Project> findByName(String name);
 }
