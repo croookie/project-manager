@@ -1,8 +1,14 @@
 package com.max.team_project_manager.exception;
 
-public class ProjectNotFoundException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public class ProjectNotFoundException extends AppException {
 
     public ProjectNotFoundException(Long projectId) {
-        super("Project with id " + projectId + " not found");
+        super(
+				HttpStatus.NOT_FOUND,
+				"PROJECT_NOT_FOUND",
+				"Project with id " + projectId + " not found"
+		);
     }
 }

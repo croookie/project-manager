@@ -1,8 +1,14 @@
 package com.max.team_project_manager.exception;
 
-public class UserNotFoundException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public class UserNotFoundException extends AppException {
 
     public UserNotFoundException(Long userId) {
-        super("User with id " + userId + " not found");
+        super(
+				HttpStatus.NOT_FOUND,
+				"USER_NOT_FOUND",
+				"User with id " + userId + " not found"
+		);
     }
 }

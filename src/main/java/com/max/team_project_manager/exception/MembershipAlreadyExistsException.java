@@ -1,9 +1,14 @@
 package com.max.team_project_manager.exception;
 
-public class MembershipAlreadyExistsException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public class MembershipAlreadyExistsException extends AppException {
 
     public MembershipAlreadyExistsException(Long projectId, Long userId) {
-        super("User " + userId +
-			  " is already a member of " + projectId);
+        super(
+				HttpStatus.CONFLICT,
+				"MEMBERSHIP_ALREADY_EXISTS",
+				"User " + userId + " is already a member of " + projectId
+		);
     }
 }

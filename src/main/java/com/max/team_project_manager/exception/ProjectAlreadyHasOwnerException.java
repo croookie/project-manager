@@ -1,8 +1,14 @@
 package com.max.team_project_manager.exception;
 
-public class ProjectAlreadyHasOwnerException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public class ProjectAlreadyHasOwnerException extends AppException {
 
     public ProjectAlreadyHasOwnerException(Long projectId) {
-        super("Project with id " + projectId + " already has an owner");
+        super(
+				HttpStatus.CONFLICT,
+				"PROJECT_ALREADY_HAS_OWNER",
+				"Project with id " + projectId + " already has an owner"
+		);
     }
 }
