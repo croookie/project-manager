@@ -14,8 +14,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import tools.jackson.databind.ObjectMapper;
-import com.max.team_project_manager.auth.LoginRequest;
-import com.max.team_project_manager.auth.RegisterRequest;
 import com.max.team_project_manager.common.IntegrationTestHelpers;
 import com.max.team_project_manager.user.UserRepository;
 
@@ -42,9 +40,7 @@ public class JwtAuthenticationIntegrationTest {
 
 	@Test
 	public void givenNewUser_whenRegister_thenReturnsToken() throws Exception {
-		RegisterRequest request = new RegisterRequest(EMAIL, PASSWORD, "Test User");
-
-		helpers.register(request)
+		helpers.register(EMAIL, PASSWORD, "Test User")
 			.andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.token").exists());
@@ -52,23 +48,18 @@ public class JwtAuthenticationIntegrationTest {
 
 	@Test
 	public void givenExistingEmail_whenRegister_thenReturnsConflict() throws Exception {
-		RegisterRequest request = new RegisterRequest(EMAIL, PASSWORD, "Test User");
+		helpers.register(EMAIL, PASSWORD, "Test User");
 
-		helpers.register(request);
-
-		helpers.register(request)
+		helpers.register(EMAIL, PASSWORD, "Test User")
 			.andDo(print())
 			.andExpect(status().isConflict());
 	}
 
 	@Test
 	public void givenValidCredentials_whenLogin_thenReturnsToken() throws Exception {
-		RegisterRequest registerRequest = new RegisterRequest(EMAIL, PASSWORD, "Test User");
-		helpers.register(registerRequest);
+		helpers.register(EMAIL, PASSWORD, "Test User");
 
-		LoginRequest loginRequest = new LoginRequest(EMAIL,PASSWORD);
-
-		helpers.login(loginRequest)
+		helpers.login(EMAIL,PASSWORD)
 			.andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.token").exists());
@@ -76,12 +67,9 @@ public class JwtAuthenticationIntegrationTest {
 
 	@Test
 	public void givenUnknownEmail_whenLogin_thenReturnsUnauthorized () throws Exception {
-		RegisterRequest registerRequest = new RegisterRequest(EMAIL, PASSWORD, "Test User");
-		helpers.register(registerRequest);
+		helpers.register(EMAIL, PASSWORD, "Test User");
 
-		LoginRequest loginRequest = new LoginRequest("unknown@example.com", PASSWORD);
-
-		helpers.login(loginRequest)
+		helpers.login("unknown@example.com", PASSWORD)
 			.andDo(print())
 			.andExpect(status().isUnauthorized())
 			.andExpect(jsonPath("$.token").doesNotExist());
@@ -89,12 +77,9 @@ public class JwtAuthenticationIntegrationTest {
 
 	@Test
 	public void givenInvalidPassword_whenLogin_thenReturnsUnauthorized() throws Exception {
-		RegisterRequest registerRequest = new RegisterRequest(EMAIL, PASSWORD, "Test User");
-		helpers.register(registerRequest);
+		helpers.register(EMAIL, PASSWORD, "Test User");
 
-		LoginRequest loginRequest = new LoginRequest(EMAIL, "invalid_password");
-
-		helpers.login(loginRequest)
+		helpers.login(EMAIL, "invalid_password")
 			.andDo(print())
 			.andExpect(status().isUnauthorized())
 			.andExpect(jsonPath("$.token").doesNotExist());
@@ -102,11 +87,7 @@ public class JwtAuthenticationIntegrationTest {
 
 	@Test
 	public void givenValidToken_whenGetProjects_thenReturnsOk() throws Exception {
-		RegisterRequest registerRequest = new RegisterRequest(EMAIL, PASSWORD, "Test User");
-
-		String token = helpers.extractToken(
-				helpers.register(registerRequest)
-		);
+		String token = helpers.registerAndGetToken(EMAIL, PASSWORD, "Test User");
 
 		mockMvc.perform(
 				get("/projects")
@@ -117,24 +98,15 @@ public class JwtAuthenticationIntegrationTest {
 
 	@Test
 	public void givenMissingToken_whenGetProjects_thenReturnsUnauthorized() throws Exception {
-		RegisterRequest registerRequest = new RegisterRequest(EMAIL, PASSWORD, "Test User");
-		helpers.register(registerRequest);
-
-		mockMvc.perform(
-				get("/projects")
-		)
+		mockMvc.perform(get("/projects"))
 			.andExpect(status().isUnauthorized());
 	}
 
 	@Test
 	public void givenInvalidToken_whenGetProjects_thenReturnsUnauthorized() throws Exception {
-		RegisterRequest registerRequest = new RegisterRequest(EMAIL, PASSWORD, "Test User");
-		helpers.register(registerRequest);
-
 		mockMvc.perform(
 				get("/projects")
-				.header("Authorization", "Bearer invalid-token")
-		)
+				.header("Authorization", "Bearer invalid-token"))
 			.andExpect(status().isUnauthorized());
 	}
 }

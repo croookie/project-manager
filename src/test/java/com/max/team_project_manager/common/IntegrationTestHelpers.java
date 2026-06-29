@@ -1,6 +1,6 @@
 package com.max.team_project_manager.common;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -10,6 +10,7 @@ import tools.jackson.databind.ObjectMapper;
 import com.max.team_project_manager.auth.AuthResponse;
 import com.max.team_project_manager.auth.LoginRequest;
 import com.max.team_project_manager.auth.RegisterRequest;
+import com.max.team_project_manager.project.CreateProjectRequest;
 
 public class IntegrationTestHelpers {
 
@@ -24,7 +25,9 @@ public class IntegrationTestHelpers {
         this.objectMapper = objectMapper;
     }
 
-	public ResultActions register(RegisterRequest request) throws Exception {
+	public ResultActions register(String email, String password, String displayName) throws Exception {
+		RegisterRequest request = new RegisterRequest(email, password, displayName);
+
 		return mockMvc.perform(
 				post("/auth/register")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -32,7 +35,9 @@ public class IntegrationTestHelpers {
 		);
 	}
 
-	public ResultActions login(LoginRequest request) throws Exception {
+	public ResultActions login(String email, String password) throws Exception {
+		LoginRequest request = new LoginRequest(email, password);
+
 		return mockMvc.perform(
 				post("/auth/login")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -48,6 +53,32 @@ public class IntegrationTestHelpers {
 		return objectMapper
 			.readValue(body, AuthResponse.class)
 			.token();
+	}
+
+	public String registerAndGetToken(String email, String password, String displayName) throws Exception {
+		return extractToken(
+				register(email, password, displayName)
+		);
+	}
+
+	public ResultActions getProjects(String token) throws Exception {
+		return mockMvc.perform(
+				get("/projects")
+				.header("Authorization", "Bearer " + token));
+	}
+
+	public ResultActions postProjects(String name, String desc, String token) throws Exception {
+		CreateProjectRequest request = new CreateProjectRequest(
+				name,
+				desc
+		);
+
+		return mockMvc.perform(
+				post("/projects")
+				.header("Authorization", "Bearer " + token)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(asJson(request))
+		);
 	}
 
 	public String asJson(Object o) throws Exception {
