@@ -17,7 +17,7 @@ public class Project {
 	@Column(nullable = false, length = 50)
 	private String name;
 
-	@Column(nullable = false, length = 1000)
+	@Column(length = 1000)
 	private String description;
 
 	public Long getId() {
