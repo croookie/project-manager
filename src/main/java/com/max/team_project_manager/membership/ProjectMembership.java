@@ -25,7 +25,7 @@ import jakarta.persistence.UniqueConstraint;
 public class ProjectMembership {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@ManyToOne

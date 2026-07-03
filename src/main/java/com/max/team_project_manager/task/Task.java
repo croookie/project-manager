@@ -18,7 +18,7 @@ import jakarta.persistence.Table;
 @Table(name = "tasks")
 public class Task {
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@ManyToOne
