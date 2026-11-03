@@ -5,6 +5,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.nio.charset.StandardCharsets;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import tools.jackson.databind.ObjectMapper;
 import com.max.team_project_manager.common.IntegrationTestHelpers;
 import com.max.team_project_manager.user.UserRepository;
+
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.io.Encoders;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -107,6 +112,31 @@ public class JwtAuthenticationIntegrationTest {
 		mockMvc.perform(
 				get("/projects")
 				.header("Authorization", "Bearer invalid-token"))
+			.andExpect(status().isUnauthorized());
+	}
+
+	@Test
+	public void givenTamperedToken_whenGetProjects_thenReturnsUnauthorized() throws Exception {
+		String validToken = helpers.registerAndGetToken(EMAIL, PASSWORD, "Valid User");
+		String[] parts = validToken.split("\\.");
+
+		byte[] payloadBytes = Decoders.BASE64URL.decode(parts[1]);
+		String payload = new String(payloadBytes, StandardCharsets.UTF_8);
+
+		String modifiedPayload = payload.replace(
+				EMAIL,
+				"attacker@test.com"
+		);
+
+		parts[1] = Encoders.BASE64URL.encode(
+				modifiedPayload.getBytes(StandardCharsets.UTF_8)
+		);
+
+		String tamperedToken = String.join(".", parts);
+
+		mockMvc.perform(
+				get("/projects")
+				.header("Authorization", "Bearer " + tamperedToken))
 			.andExpect(status().isUnauthorized());
 	}
 }
