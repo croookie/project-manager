@@ -49,7 +49,7 @@ All endpoints except registration and login require a valid bearer token.
 | `POST` | `/auth/login` | Authenticate and receive an authentication token |
 | `POST` | `/projects` | Create a project |
 | `GET` | `/projects` | List projects available to the authenticated user |
-| `GET` | `/projects/{id}` | Retrieve a project |
+| `GET` | `/projects/{id}` | Retrieve a project (if visible to the authenticated user) |
 | `DELETE` | `/projects/{id}` | Delete a project |
 | `POST` | `/projects/{projectId}/members` | Add a project member |
 | `DELETE` | `/projects/{projectId}/members/{userId}` | Remove a project member |
@@ -76,11 +76,9 @@ The repository includes the Maven Wrapper, so a separate Maven installation is n
 ### 1. Clone the repository
 
 ```bash
-git clone <repository-url>
-cd <repository-directory>
+git clone https://github.com/croookie/project-manager.git
+cd project-manager
 ```
-
-Replace the placeholders with the repository URL and directory name.
 
 ### 2. Create the PostgreSQL database
 
@@ -110,7 +108,7 @@ export DB_PASSWORD="your_database_password"
 export JWT_SECRET="replace_with_a_long_random_secret"
 ```
 
-`JWT_SECRET` must be sufficiently long for the configured HMAC signing algorithm. Use a securely generated secret of at least 32 bytes. Do not commit real credentials or secrets to the repository.
+`JWT_SECRET` must be sufficiently long for the configured HMAC signing algorithm. Use a securely generated secret of at least 32 bytes.
 
 ### 4. Run the application
 
