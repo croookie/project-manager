@@ -122,13 +122,13 @@ Run Flyway through the Maven plugin:
 
 `./mvnw flyway:migrate`
 
-The plugin connects to localhost:5432/project_manager_db using DB_USERNAME and DB_PASSWORD.
+The plugin connects to `localhost:5432/project_manager_db` using `DB_USERNAME` and `DB_PASSWORD`.
 
 ## 6. Start the application
 
 `./mvnw spring-boot:run`
 
-The application uses the same database credentials and the default PostgreSQL connection at localhost:5432/project_manager_db.
+The application uses the same database credentials and the default PostgreSQL connection at `localhost:5432/project_manager_db`.
 
 ## Tests
 
