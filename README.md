@@ -1,174 +1,173 @@
 # Team Project Manager
 
-A Spring Boot REST API for managing projects, project memberships, and tasks. The application uses JWT-based authentication and role-based authorization to control access to project operations.
+Spring Boot REST API for project, membership, and task management, with JWT authentication and role-based authorization.
 
 ## Tech stack
 
-- **Java 21**
-- **Spring Boot 4.0.1**
-- **Spring Security** for request authentication and authorization
-- **JWT (JJWT 0.13.0)** for token-based authentication
-- **Spring Data JPA / Hibernate** for persistence
-- **PostgreSQL** for the application database
-- **Flyway** for database schema migrations
-- **Maven** for dependency management and builds
-- **JUnit, Mockito, MockMvc, and H2** for automated tests
+* Java 21
+* Spring Boot 4.0.1
+* Spring Security
+* JJWT 0.13.0
+* Spring Data JPA / Hibernate
+* PostgreSQL
+* Flyway
+* Maven
+* JUnit, Mockito, MockMvc, H2
 
 ## Features
 
-- User registration and login.
-- JWT-based authentication for protected endpoints.
-- Project creation, retrieval, listing, and deletion.
-- Project membership management.
-- Project roles: `OWNER`, `ADMIN`, and `MEMBER`.
-- Role-based checks for membership and task operations.
-- Task creation with an initial `TODO` status.
-- Versioned database schema managed by Flyway.
-- Unit tests for service-level business rules and integration tests for HTTP and persistence behavior.
+* User registration and login with JWT authentication.
+* Project creation, retrieval, listing, and deletion.
+* Project membership management with OWNER, ADMIN, and MEMBER roles.
+* Role-based authorization.
+* Task creation with an initial TODO status.
+* Versioned database migrations.
+* Unit and integration tests.
 
-> **Current scope:** task creation is implemented. Task listing, updating, assignment, and deletion are not currently exposed as API operations.
+Current scope: Task listing, updating, assignment, and deletion are not exposed as API operations.
 
 ## Architecture
 
-The codebase is organized by feature, with responsibilities separated into controller, service, repository, and data-transfer layers.
+The application follows a layered, feature-oriented structure:
 
-- **Controllers** expose the HTTP API.
-- **Services** implement application rules and coordinate operations.
-- **Repositories** provide database access through Spring Data JPA.
-- **Security** contains JWT handling, the authentication filter, and current-user access.
-- **DTOs** represent request and response payloads.
-- **Flyway migrations** define the PostgreSQL schema in `src/main/resources/db/migration`.
+* Controllers: HTTP endpoints.
+* Services: Business logic and authorization.
+* Repositories: Data access through Spring Data JPA.
+* Security: JWT processing and request authentication.
+* DTOs: API request and response models.
+* Migrations: SQL files in src/main/resources/db/migration.
 
-## API overview
+## API
 
-All endpoints except registration and login require a valid bearer token.
+Registration and login are public. All other endpoints require a bearer token.
 
-| Method | Endpoint | Purpose |
-|---|---|---|
-| `POST` | `/auth/register` | Register a user and receive an authentication token |
-| `POST` | `/auth/login` | Authenticate and receive an authentication token |
-| `POST` | `/projects` | Create a project |
-| `GET` | `/projects` | List projects available to the authenticated user |
-| `GET` | `/projects/{id}` | Retrieve a project (if visible to the authenticated user) |
-| `DELETE` | `/projects/{id}` | Delete a project |
-| `POST` | `/projects/{projectId}/members` | Add a project member |
-| `DELETE` | `/projects/{projectId}/members/{userId}` | Remove a project member |
-| `POST` | `/projects/{projectId}/tasks` | Create a task in a project |
+Method	Endpoint	Description
+POST	/auth/register	Register a user
+POST	/auth/login	Authenticate a user
+POST	/projects	Create a project
+GET	/projects	List accessible projects
+GET	/projects/{id}	Retrieve a project
+DELETE	/projects/{id}	Delete a project
+POST	/projects/{projectId}/members	Add a member
+DELETE	/projects/{projectId}/members/{userId}	Remove a member
+POST	/projects/{projectId}/tasks	Create a task
 
-For protected requests, provide the token in the header:
+Protected requests require:
 
-```http
-Authorization: Bearer <token>
-```
+`Authorization: Bearer <token>`
 
-Request validation and authorization rules are enforced by the application. The exact permissions depend on the operation and the caller's project role.
+# Getting started
 
-## Getting started
+## Prerequisites
 
-### Prerequisites
+* JDK 21
+* PostgreSQL
+* Git
 
-- JDK 21
-- PostgreSQL
-- Git
+Maven is included through the Maven Wrapper.
 
-The repository includes the Maven Wrapper, so a separate Maven installation is not required.
-
-### 1. Clone the repository
+## 1. Clone the repository
 
 ```bash
 git clone https://github.com/croookie/project-manager.git
 cd project-manager
 ```
 
-### 2. Create the PostgreSQL database
+## 2. Install PostgreSQL
 
-For example, using `createdb`:
-
-```bash
-createdb project_manager_db
-```
-
-Alternatively, create a database named `project_manager_db` using your PostgreSQL client.
-
-### 3. Configure environment variables
-
-The application reads its database credentials and JWT signing secret from environment variables:
-
-| Variable | Purpose |
-|---|---|
-| `DB_USERNAME` | PostgreSQL username |
-| `DB_PASSWORD` | PostgreSQL password |
-| `JWT_SECRET` | Secret used to sign JWTs |
-
-Set them in your shell before starting the application. For example:
+On Debian/Ubuntu:
 
 ```bash
-export DB_USERNAME="your_database_user"
-export DB_PASSWORD="your_database_password"
-export JWT_SECRET="replace_with_a_long_random_secret"
+sudo apt update
+sudo apt install postgresql
+sudo service postgresql start
 ```
 
-`JWT_SECRET` must be sufficiently long for the configured HMAC signing algorithm. Use a securely generated secret of at least 32 bytes.
+Verify the server is running:
 
-### 4. Run the application
+`pg_isready`
+
+## 3. Create the database and role
+
+Open a PostgreSQL administrative session:
+
+`sudo -u postgres psql`
+
+Create a role and database:
+
+```sql
+CREATE ROLE project_manager_user
+WITH LOGIN PASSWORD 'your_secure_password';
+CREATE DATABASE project_manager_db
+OWNER project_manager_user;
+```
+
+Exit with `\q`.
+
+## 4. Configure environment variables
+
+Set the database credentials and JWT signing secret:
 
 ```bash
-./mvnw spring-boot:run
+export DB_USERNAME="project_manager_user"
+export DB_PASSWORD="your_secure_password"
+export JWT_SECRET="your_random_secret"
 ```
 
-On Windows, use:
+`JWT_SECRET` must be at least 32 bytes for the configured HMAC algorithm.
 
-```powershell
-.\mvnw.cmd spring-boot:run
+## 5. Apply database migrations
+
+Run Flyway through the Maven plugin:
+
+`./mvnw flyway:migrate`
+
+The plugin connects to localhost:5432/project_manager_db using DB_USERNAME and DB_PASSWORD.
+
+## 6. Start the application
+
+`./mvnw spring-boot:run`
+
+The application uses the same database credentials and the default PostgreSQL connection at localhost:5432/project_manager_db.
+
+## Tests
+
+Run the test suite:
+
+`./mvnw test`
+
+Or run the full Maven verification lifecycle:
+
+`./mvnw clean verify`
+
+Tests use the test Spring profile and an in-memory H2 database. Integration tests use MockMvc; service unit tests use Mockito.
+
+## Project structure
+
 ```
-
-Flyway applies the versioned migrations from `src/main/resources/db/migration` when the application starts.
-
-The application uses the PostgreSQL database configured in `src/main/resources/application.properties` (`localhost:5432/project_manager_db` by default).
-
-## Running tests
-
-Run the test suite with:
-
-```bash
-./mvnw test
-```
-
-Or run the Maven verification lifecycle:
-
-```bash
-./mvnw clean verify
-```
-
-The integration tests activate the `test` Spring profile using `@ActiveProfiles("test")`. The profile configuration in `src/test/resources/application-test.properties` uses an in-memory H2 database, separate from the PostgreSQL database used by the application.
-
-The integration tests use MockMvc to exercise HTTP endpoints and verify persisted state. Service unit tests use Mockito to isolate business logic and verify authorization behavior.
-
-## Project layout
-
-```text
 src/
 ├── main/
 │   ├── java/com/max/team_project_manager/
-│   │   ├── auth/          # Registration and login
-│   │   ├── common/        # Shared API response handling
-│   │   ├── exception/     # Application exceptions
-│   │   ├── membership/    # Project membership and roles
-│   │   ├── project/       # Project API and business logic
-│   │   ├── security/      # JWT and Spring Security
-│   │   ├── task/          # Task creation and task models
-│   │   └── user/          # User API and persistence
+│   │   ├── auth/
+│   │   ├── common/
+│   │   ├── exception/
+│   │   ├── membership/
+│   │   ├── project/
+│   │   ├── security/
+│   │   ├── task/
+│   │   └── user/
 │   └── resources/
-│       ├── db/migration/  # Flyway SQL migrations
+│       ├── db/migration/
 │       └── application.properties
 └── test/
-    ├── java/              # Unit and integration tests
+    ├── java/
     └── resources/
         └── application-test.properties
+
 ```
 
-## Notes
+# Configuration
 
-- The default application configuration expects PostgreSQL to be available locally.
-- Tests use H2 through the `test` profile and should not require the application PostgreSQL database.
-- Keep local secrets in environment variables or an untracked local configuration file. Never commit production credentials.
+* PostgreSQL must be running before migrations or application startup.
+* Flyway migrations are applied manually using ./mvnw flyway:migrate.
+* Database credentials and JWT secrets should be supplied through environment variables and never committed to the repository.
