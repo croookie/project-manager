@@ -60,40 +60,69 @@ Protected requests require:
 
 ## Prerequisites
 
+* Debian or Ubuntu
 * JDK 21
 * PostgreSQL
 * Git
 
 Maven is included through the Maven Wrapper.
 
-## 1. Clone the repository
+## 1. Install dependencies
+
+```bash
+sudo apt update
+sudo apt install -y git openjdk-21-jdk postgresql postgresql-client
+```
+
+Verify Java and Git:
+
+java -version
+git --version
+
+## 2. Clone the repository
 
 ```bash
 git clone https://github.com/croookie/project-manager.git
 cd project-manager
 ```
 
-## 2. Install PostgreSQL
+## 3. Configure PostgreSQL
 
-On Debian/Ubuntu:
+Start PostgreSQL:
 
 ```bash
-sudo apt update
-sudo apt install postgresql
 sudo service postgresql start
 ```
 
-Verify the server is running:
+Set the PostgreSQL cluster to use the default port 5432:
 
-`pg_isready`
+```bash
+sudo pg_lsclusters
+```
 
-## 3. Create the database and role
+Find your PostgreSQL version and cluster name in the output. For a standard installation with PostgreSQL 17:
+
+```bash
+sudo pg_ctlcluster 17 main stop
+sudo pg_conftool 17 main set port 5432
+sudo pg_ctlcluster 17 main start
+```
+
+Replace 17 with your installed PostgreSQL major version if necessary.
+
+Verify that PostgreSQL is accepting connections on port 5432:
+
+```bash
+pg_isready -h 127.0.0.1 -p 5432
+```
+
+## 4. Create the database and role
 
 Open a PostgreSQL administrative session:
 
 `sudo -u postgres psql`
 
-Create a role and database:
+Create the application role and database:
 
 ```sql
 CREATE ROLE project_manager_user
@@ -104,9 +133,7 @@ OWNER project_manager_user;
 
 Exit with `\q`.
 
-## 4. Configure environment variables
-
-Set the database credentials and JWT signing secret:
+## 5. Configure environment variables
 
 ```bash
 export DB_USERNAME="project_manager_user"
@@ -116,17 +143,19 @@ export JWT_SECRET="your_random_secret"
 
 `JWT_SECRET` must be at least 32 bytes for the configured HMAC algorithm.
 
-## 5. Apply database migrations
+## 6. Apply database migrations
 
-Run Flyway through the Maven plugin:
+```bash
+./mvnw flyway:migrate`
+```
 
-`./mvnw flyway:migrate`
+Flyway connects to `localhost:5432/project_manager_db` using `DB_USERNAME` and `DB_PASSWORD`.
 
-The plugin connects to `localhost:5432/project_manager_db` using `DB_USERNAME` and `DB_PASSWORD`.
+## 7. Start the application
 
-## 6. Start the application
-
-`./mvnw spring-boot:run`
+```bash
+./mvnw spring-boot:run
+```
 
 The application uses the same database credentials and the default PostgreSQL connection at `localhost:5432/project_manager_db`.
 
@@ -134,11 +163,15 @@ The application uses the same database credentials and the default PostgreSQL co
 
 Run the test suite:
 
-`./mvnw test`
+```bash
+./mvnw test
+```
 
 Or run the full Maven verification lifecycle:
 
-`./mvnw clean verify`
+```bash
+./mvnw clean verify
+```
 
 Tests use the test Spring profile and an in-memory H2 database. Integration tests use MockMvc; service unit tests use Mockito.
 
