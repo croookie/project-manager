@@ -41,16 +41,17 @@ The application follows a layered, feature-oriented structure:
 
 Registration and login are public. All other endpoints require a bearer token.
 
-Method	Endpoint	Description
-POST	/auth/register	Register a user
-POST	/auth/login	Authenticate a user
-POST	/projects	Create a project
-GET	/projects	List accessible projects
-GET	/projects/{id}	Retrieve a project
-DELETE	/projects/{id}	Delete a project
-POST	/projects/{projectId}/members	Add a member
-DELETE	/projects/{projectId}/members/{userId}	Remove a member
-POST	/projects/{projectId}/tasks	Create a task
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/auth/register` | Register a user |
+| POST | `/auth/login` | Authenticate a user | 
+| POST | `/projects` | Create a project |
+| GET | `/projects` | List accessible projects |
+| GET | `/projects/{id}` | Retrieve a project |
+| DELETE | `/projects/{id}` | Delete a project |
+| POST | `/projects/{projectId}/members` | Add a member |
+| DELETE | `/projects/{projectId}/members/{userId}` | Remove a member |
+| POST | `/projects/{projectId}/tasks` | Create a task |
 
 Protected requests require:
 
